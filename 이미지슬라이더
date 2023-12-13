@@ -73,6 +73,9 @@
     </script>
 </head>
 <body>
+    <div id="footer" style="text-align: center; padding: 20px; background: #faf7f7;">
+        <p style="font-size: 16px; color: #333;">2302576 이영지</p>
+    </div>
     <div class="slider">
         <div class="images">
             <img class="image" src="https://via.placeholder.com/460x300?text=image-0" />
