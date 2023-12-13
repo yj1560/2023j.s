@@ -88,6 +88,10 @@
     eraser = !eraser;
   }
 
+  // 텍스트 추가
+  context.font = "20px Arial";
+  context.fillText("2302576 이영지", 10, 30);
+
   canvas.addEventListener('mousedown', startPosition);
   canvas.addEventListener('mouseup', endPosition);
   canvas.addEventListener('mousemove', draw);
