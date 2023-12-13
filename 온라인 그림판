@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>온라인 그림판</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    canvas {
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+
+<input type="color" id="colorPicker" value="#000000">
+<button onclick="undo()">Undo</button>
+<button onclick="toggleEraser()">Eraser</button>
+<label for="penSize">Pen Size:</label>
+<input type="number" id="penSize" value="5" min="1">
+<label for="eraserSize">Eraser Size:</label>
+<input type="number" id="eraserSize" value="20" min="1">
+<canvas id="canvas" width="800" height="400"></canvas>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+  const colorPicker = document.getElementById('colorPicker');
+  const undoStack = [];
+  let painting = false;
+  let eraser = false;
+
+  function startPosition(e) {
+    painting = true;
+    draw(e);
+  }
+
+  function endPosition() {
+    painting = false;
+    context.beginPath();
+    saveState();
+  }
+
+  function draw(e) {
+    if (!painting) return;
+
+    const lineWidth = eraser ? Number(document.getElementById('eraserSize').value) : Number(document.getElementById('penSize').value);
+
+    context.lineWidth = lineWidth;
+    context.lineCap = 'round';
+    
+    if (eraser) {
+      context.strokeStyle = 'white'; // 지우개일 때는 흰색으로 설정
+    } else {
+      context.strokeStyle = colorPicker.value;
+    }
+
+    context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+  }
+
+  function saveState() {
+    undoStack.push(canvas.toDataURL());
+  }
+
+  function undo() {
+    if (undoStack.length > 1) {
+      undoStack.pop();
+      const img = new Image();
+      img.src = undoStack[undoStack.length - 1];
+      img.onload = function() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(img, 0, 0);
+      };
+    }
+  }
+
+  function toggleEraser() {
+    eraser = !eraser;
+  }
+
+  canvas.addEventListener('mousedown', startPosition);
+  canvas.addEventListener('mouseup', endPosition);
+  canvas.addEventListener('mousemove', draw);
+  saveState(); // 초기 상태 저장
+</script>
+
+</body>
+</html>
